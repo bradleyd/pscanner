@@ -6,5 +6,5 @@ A simple port scanner in Elixir
 ## Usage 
 
 ```elixir
-pscanner --host=127.0.0.1 --start=1 --end=100
+pscanner --a=127.0.0.1 --s=1 --e=100
 ```
