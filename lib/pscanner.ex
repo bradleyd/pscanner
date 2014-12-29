@@ -3,9 +3,24 @@ defmodule Pscanner do
 
   def main(args) do
     options = parse_args(args)
+    coord = Task.async(Pscanner.Coordinator, :start, [options[:s], options[:e]])
     task = Task.async(Pscanner.Scan, :start, [0])
     do_work(options[:a], options[:s], options[:e])
     Task.await(task, :infinity)
+    Task.await(coord, :infinity)
+    collect_results
+  end
+
+  defp collect_results do
+    {:ok, results} = Pscanner.Scan.results
+    IO.puts """
+    Port Scanner Results
+    ====================
+
+    Open: #{results.open}
+    Closed: #{results.closed}
+    """
+
   end
 
   defp parse_args(args) do
@@ -18,18 +33,10 @@ defmodule Pscanner do
   end
 
   defp do_work(host, s, e) do
-      Enum.each(s..e, fn i -> 
-        Pscanner.Scan.scan(host, i)
-      end)
+    Enum.each(s..e, fn i -> 
+    spawn(Pscanner.Scan, :scan, [host, i])
+    end)
 
-      {:ok, results} = Pscanner.Scan.results
-      IO.puts """
-      Port Scanner Results
-      ====================
-
-      Open: #{results.open}
-      Closed: #{results.closed}
-      """
   end
 
   defp help do

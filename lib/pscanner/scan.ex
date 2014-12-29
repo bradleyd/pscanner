@@ -26,10 +26,12 @@ defmodule Pscanner.Scan do
   end
 
   defp closed(item) do
+    send(Pscanner.Coordinator, {:finished, 1})
     GenServer.cast(__MODULE__, {:closed, item})
   end
 
   defp open(item) do
+    send(Pscanner.Coordinator, {:finished, 1})
     GenServer.cast(__MODULE__, {:open, item})
   end
 
