@@ -2,12 +2,12 @@ defmodule Pscanner.Scan do
  
   use GenServer
 
-  def start(state) do
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  def start do
+    GenServer.start_link(__MODULE__, %{open: [], closed: 0}, name: __MODULE__)
   end
 
-  def init(_) do
-    {:ok, %{closed: 0, open: 0} } 
+  def init(state) do
+    {:ok, state } 
   end
 
   def results do
@@ -36,7 +36,7 @@ defmodule Pscanner.Scan do
   end
 
   def handle_cast({:open, item}, state)  do
-    {:noreply, %{ open: state.open + 1, closed: state.closed }}
+    {:noreply, %{state | open: [item|state.open]}}
   end
 
   def handle_cast({:closed, item}, state)  do
